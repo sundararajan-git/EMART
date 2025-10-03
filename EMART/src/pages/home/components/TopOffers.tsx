@@ -8,11 +8,31 @@ import {
 import { Star } from "lucide-react";
 import { LuMinus, LuPlus } from "react-icons/lu";
 import { IoBookmarkOutline } from "react-icons/io5";
+import { useEffect, useState } from "react";
+import axiosInstance from "@/lib/axios/axios";
 
 const TopOffers = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  const getProducts = async () => {
+    try {
+      const { data } = await axiosInstance.get("/emart/top-offers");
+      switch (data.status) {
+        case "FETCHED":
+          setProducts(data.products);
+          break;
+      }
+    } catch (error) {
+      console.error("There was a problem with the fetch operation:", error);
+    }
+  };
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full">
-      {Array.from({ length: 5 }).map((_, index) => {
+      {products.map((p, index) => {
         return (
           <Card
             key={index}
@@ -26,7 +46,7 @@ const TopOffers = () => {
             </Button>
             <CardHeader className="p-0 hover:cursor-pointer">
               <img
-                src={"http://localhost:3000/snacks.png"}
+                src={p.images[0]}
                 alt="img"
                 className="w-40 mx-auto h-40 object-cover rounded-xl"
               />

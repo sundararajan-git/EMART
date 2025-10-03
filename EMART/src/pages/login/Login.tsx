@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { validateForm } from "@/lib/helper";
+import axiosInstance from "@/lib/axios/axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,21 +18,23 @@ const Login = () => {
         return toast.error("Invalid inputs");
       }
 
-      const { email, password } = { email: "", password: "" };
+      formJson.software = "EMart";
 
-      if (formJson.email !== email) {
-        return toast.error("User not found !");
+      const { data } = await axiosInstance.post("/auth/login", formJson);
+
+      console.log(data.user.jwtToken);
+      toast.success(data.message);
+      switch (data.status) {
+        case "LOGINED":
+          localStorage.setItem("jwt", JSON.stringify(data.user.jwtToken));
+          navigate("/");
+          break;
+        case "RESEND_VERIFICATION":
+          navigate("/verify");
+          break;
+        default:
+          null;
       }
-
-      if (formJson.password !== password) {
-        return toast.error("Password is incorrect !");
-      }
-
-      //   auth.isLogin = true;
-      //   localStorage.setItem("auth", JSON.stringify(auth));
-
-      navigate("/");
-      toast.success("Login successfully");
     } catch (err) {
       console.error(err);
     }

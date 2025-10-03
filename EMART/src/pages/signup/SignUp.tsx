@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { validateForm } from "@/lib/helper";
+import axiosInstance from "@/lib/axios/axios";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ const SignUp = () => {
       const formData = new FormData(e.currentTarget);
       const formJson = Object.fromEntries(formData);
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
       if (!validateForm(e.currentTarget)) {
         return toast.error("Invalid inputs");
@@ -26,12 +29,30 @@ const SignUp = () => {
         return toast.error("Password is not matched");
       }
 
-      if ((formJson.password as string).length < 6) {
-        return toast.error("Password is minium 6 charcters required");
+      if (!passwordRegex.test(formJson.password as string)) {
+        return toast.error(
+          "Password must be 8+ chars with 1 uppercase & 1 lowercase."
+        );
       }
 
-      navigate("/login");
-      toast.success("Signup successfully");
+      formJson.software = "EMart";
+
+      const { data } = await axiosInstance.post("/auth/signup", formJson);
+      console.log(data.user);
+      toast.success(data.message);
+      switch (data.status) {
+        case "ALREADY_VERIFIED":
+          navigate("/login");
+          break;
+        case "RESEND_VERIFICATION":
+          navigate("/verify");
+          break;
+        case "NEW_USER":
+          navigate("/verify");
+          break;
+        default:
+          null;
+      }
     } catch (err) {
       console.error(err);
     }

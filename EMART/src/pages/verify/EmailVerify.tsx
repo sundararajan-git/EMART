@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import axiosInstance from "@/lib/axios/axios";
 import { useState, useRef } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const EmailVerify = () => {
+  const navigate = useNavigate();
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
@@ -28,10 +32,45 @@ const EmailVerify = () => {
     if (e.key === "Backspace" && otp[index] === "" && index > 0) {
       inputsRef.current[index - 1]?.focus();
     }
+    if (e.key === "Backspace") {
+      setOtp((prev) => {
+        const clone = prev.map((n, j) => {
+          if (j === index) {
+            return "";
+          } else {
+            return n;
+          }
+        });
+        return clone;
+      });
+    }
+    if (e.key === "Enter") {
+      getOTPValue();
+    }
   };
 
-  const getOTPValue = () => {
-    alert("OTP Entered: " + otp.join(""));
+  const getOTPValue = async () => {
+    try {
+      const { data } = await axiosInstance.post(
+        `/auth/verify-email/${"68deaca2e0665b119bb75692"}`,
+        {
+          code: otp.join(""),
+          software: "EMart",
+        }
+      );
+      console.log("Data", data);
+      toast.success(data.message);
+      switch (data.status) {
+        case "VERIFIED":
+          navigate("/login");
+          break;
+        default:
+          toast.error("Unkown action");
+          null;
+      }
+    } catch (err: any) {
+      toast.error(err);
+    }
   };
 
   return (

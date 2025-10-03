@@ -11,6 +11,7 @@ import { LuMinus, LuPlus } from "react-icons/lu";
 import { IoBookmarkOutline } from "react-icons/io5";
 import FilterProducts from "./components/FilterProducts";
 import { useEffect, useState } from "react";
+import axiosInstance from "@/lib/axios/axios";
 
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
@@ -21,20 +22,12 @@ const ProductsList = () => {
 
   const getProducts = async () => {
     try {
-      const response = await fetch("http://localhost:3001/products", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      const { data } = await axiosInstance.get("/emart/products");
+      switch (data.status) {
+        case "FETCHED":
+          setProducts(data.products);
+          break;
       }
-
-      const data = await response.json();
-      console.log(data); // Handle the data as needed
-      setProducts(data);
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     }
@@ -62,6 +55,7 @@ const ProductsList = () => {
                 <img
                   src={pro.images[0]}
                   alt="img"
+                  loading="eager"
                   className="w-30 h-30  sm:w-50 sm:h-50 mx-auto object-contain rounded-xl"
                 />
               </CardHeader>

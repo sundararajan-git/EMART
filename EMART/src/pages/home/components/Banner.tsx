@@ -32,11 +32,11 @@ const Banner = () => {
     <div className="w-full relative mt-4">
       <picture>
         <source
-          srcSet="http://localhost:3000/bottom_banner.png"
+          srcSet="https://res.cloudinary.com/dlwe2wlwl/image/upload/v1759478762/bottom_banner_kvwzl3.png"
           media="(min-width: 768px)"
         />
         <img
-          src="http://localhost:3000/bottom_banner1.png"
+          src="https://res.cloudinary.com/dlwe2wlwl/image/upload/v1759478762/bottom_banner1_h3zthi.png"
           alt="banner"
           className="w-full h-auto object-cover object-[0px_-100px] sm:object-[0px_-150px] md:object-[0px_0px]"
         />

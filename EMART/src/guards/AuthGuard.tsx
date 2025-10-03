@@ -1,7 +1,7 @@
 import { Navigate, Outlet, useLocation, matchPath } from "react-router-dom";
 
 const AuthGuard = () => {
-  const auth = { email: "", isLogin: true };
+  const auth = { email: "ee", isLogin: true };
   const location = useLocation();
 
   const publicRoutes = [

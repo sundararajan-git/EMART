@@ -300,7 +300,8 @@ const reviews = [
   {
     id: 1,
     name: "John Doe",
-    avatar: "https://i.pravatar.cc/40?img=1",
+    avatar:
+      "https://res.cloudinary.com/dlwe2wlwl/image/upload/v1759480502/reviewer1_hcjek3.png",
     rating: 5,
     comment: "Amazing hoodie! Fits perfectly and very comfortable.",
     date: "Sep 10, 2025",
@@ -308,7 +309,8 @@ const reviews = [
   {
     id: 2,
     name: "Jane Smith",
-    avatar: "https://i.pravatar.cc/40?img=2",
+    avatar:
+      "https://res.cloudinary.com/dlwe2wlwl/image/upload/v1759480503/reviewer2_yhza2x.png",
     rating: 4,
     comment: "Good quality, but the color is slightly different than shown.",
     date: "Sep 8, 2025",
@@ -316,7 +318,8 @@ const reviews = [
   {
     id: 3,
     name: "Alex Johnson",
-    avatar: "https://i.pravatar.cc/40?img=3",
+    avatar:
+      "https://res.cloudinary.com/dlwe2wlwl/image/upload/v1759480508/reviewer3_zqlvff.png",
     rating: 5,
     comment: "Excellent hoodie! Warm and stylish.",
     date: "Sep 5, 2025",

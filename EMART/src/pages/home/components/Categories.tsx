@@ -54,8 +54,9 @@ const Categories = () => {
           <CarouselItem key={index} className="max-w-[200px] h-fit">
             <Card className="border-0 bg-muted items-center px-6 py-4 gap-8 h-[250px] hover:cursor-pointer">
               <img
-                src={item.image}
+                src={item.imageUrl}
                 alt={`slide-${index}`}
+                loading="eager"
                 className="object-contain w-full"
               />
               <p className="line-clamp-2">{item.name}</p>

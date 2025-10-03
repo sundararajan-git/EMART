@@ -8,11 +8,32 @@ import {
 import { Star } from "lucide-react";
 import { LuMinus, LuPlus } from "react-icons/lu";
 import { IoBookmarkOutline } from "react-icons/io5";
+import { useEffect, useState } from "react";
+import axiosInstance from "@/lib/axios/axios";
 
 const BestSellers = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  const getProducts = async () => {
+    try {
+      const { data } = await axiosInstance.get("/emart/best-sellers");
+      console.log(data);
+      switch (data.status) {
+        case "FETCHED":
+          setProducts(data.products);
+          break;
+      }
+    } catch (error) {
+      console.error("There was a problem with the fetch operation:", error);
+    }
+  };
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full">
-      {Array.from({ length: 5 }).map((_, index) => {
+      {products.map((p, index) => {
         return (
           <Card
             key={index}
@@ -26,15 +47,15 @@ const BestSellers = () => {
             </Button>
             <CardHeader className="p-0 hover:cursor-pointer">
               <img
-                src={"http://localhost:3000/fruits.png"}
+                src={p.images[0]}
                 alt="img"
-                className="w-40 mx-auto h-fit object-cover rounded-xl"
+                className="w-40 mx-auto h-40 object-cover rounded-xl"
               />
             </CardHeader>
             <CardContent className="flex items-center justify-between p-0 hover:cursor-pointer">
               <div className="flex flex-col gap-1 sm:gap-2">
-                <p className="text-sm text-muted-foreground">Clothing</p>
-                <h3 className="text-base font-semibold">Potato Chips</h3>
+                <p className="text-sm text-muted-foreground">{p.category}</p>
+                <h3 className="text-base font-semibold">{p.name}</h3>
                 <div className="hidden sm:flex flex-wrap items-start sm:items-center">
                   {[...Array(5)].map((_, index) => (
                     <Star
