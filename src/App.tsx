@@ -19,7 +19,7 @@ const App = () => {
       <Route element={<AuthGuard />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/products" element={<ProductsList />} />
+          <Route path="/search" element={<ProductsList />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
         </Route>

@@ -1,42 +1,25 @@
+import HomePageBannerSke from "@/components/skeletons/HomePageBannerSke";
+import { useState } from "react";
 import { BiLeaf } from "react-icons/bi";
 import { LuTruck } from "react-icons/lu";
 import { RiBitCoinLine, RiHeartAddLine } from "react-icons/ri";
 
 const Banner = () => {
-  const features = [
-    {
-      icon: <LuTruck className="size-4 sm:size-5 md:size-6 text-white" />,
-      title: "Fastest Delivery",
-      desc: "Groceries delivered in under 30 minutes.",
-    },
-    {
-      icon: <BiLeaf className="size-4 sm:size-5 md:size-6 text-white" />,
-      title: "Freshness Guaranteed",
-      desc: "Fresh produce straight from the source.",
-    },
-    {
-      icon: <RiBitCoinLine className="size-4 sm:size-5 md:size-6 text-white" />,
-      title: "Affordable Prices",
-      desc: "Quality groceries at unbeatable prices.",
-    },
-    {
-      icon: (
-        <RiHeartAddLine className="size-4 sm:size-5 md:size-6 text-white" />
-      ),
-      title: "Trusted by Thousands",
-      desc: "Loved by 10,000+ happy customers.",
-    },
-  ];
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <div className="w-full relative mt-4">
-      <picture>
+      {!loaded && <HomePageBannerSke />}
+      <picture className={`${loaded ? "block" : "hidden"}`}>
         <source
           srcSet="https://res.cloudinary.com/dlwe2wlwl/image/upload/v1759478762/bottom_banner_kvwzl3.png"
           media="(min-width: 768px)"
         />
         <img
           src="https://res.cloudinary.com/dlwe2wlwl/image/upload/v1759478762/bottom_banner1_h3zthi.png"
+          onLoad={() => {
+            setLoaded(true);
+          }}
           alt="banner"
           className="w-full h-auto object-cover object-[0px_-100px] sm:object-[0px_-150px] md:object-[0px_0px]"
         />
@@ -75,3 +58,26 @@ const Banner = () => {
 };
 
 export default Banner;
+
+const features = [
+  {
+    icon: <LuTruck className="size-4 sm:size-5 md:size-6 text-white" />,
+    title: "Fastest Delivery",
+    desc: "Groceries delivered in under 30 minutes.",
+  },
+  {
+    icon: <BiLeaf className="size-4 sm:size-5 md:size-6 text-white" />,
+    title: "Freshness Guaranteed",
+    desc: "Fresh produce straight from the source.",
+  },
+  {
+    icon: <RiBitCoinLine className="size-4 sm:size-5 md:size-6 text-white" />,
+    title: "Affordable Prices",
+    desc: "Quality groceries at unbeatable prices.",
+  },
+  {
+    icon: <RiHeartAddLine className="size-4 sm:size-5 md:size-6 text-white" />,
+    title: "Trusted by Thousands",
+    desc: "Loved by 10,000+ happy customers.",
+  },
+];

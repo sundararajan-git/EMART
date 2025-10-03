@@ -7,18 +7,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { HiOutlineShoppingBag } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../shadcn/theme-provider";
 import { SiSinglestore } from "react-icons/si";
 import { GrocerySearch } from "./GrocerySearch";
+import { IoCartOutline } from "react-icons/io5";
 
 const NavBar = () => {
   const { setTheme } = useTheme();
@@ -29,6 +28,7 @@ const NavBar = () => {
     localStorage.setItem("auth", JSON.stringify(auth));
     navigate("/");
   };
+
   return (
     <div className="flex gap-2 items-center justify-between w-full p-2 sm:p-4 sticky top-0 bg-background z-50">
       <div
@@ -44,14 +44,15 @@ const NavBar = () => {
           className="cursor-pointer hidden sm:flex flex-col items-center gap-1 relative"
           onClick={() => navigate("/cart")}
         >
-          <HiOutlineShoppingBag className="text-xl" />
-          <span className="text-xs">Cart</span>
-          <Badge
-            variant="default"
-            className="rounded-full w-5 h-5 bg-green-600 absolute -top-2 left-5"
-          >
-            2
-          </Badge>
+          <IoCartOutline className="text-2xl" />
+          {true ? (
+            <Badge
+              variant="default"
+              className="rounded-full w-5 h-5 bg-green-600 absolute -top-2 left-5"
+            >
+              0
+            </Badge>
+          ) : null}
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -60,28 +61,16 @@ const NavBar = () => {
                 src="https://github.com/shadcn.png1"
                 className="cursor-pointer"
               />
-              <AvatarFallback className="cursor-pointer">SR</AvatarFallback>
+              <AvatarFallback className="cursor-pointer">UR</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="start">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                Profile
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="sm:hidden">
-                Search
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem className=" sm:hidden">
-                Cart
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Orders
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-              </DropdownMenuItem>
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem className="sm:hidden">Search</DropdownMenuItem>
+              <DropdownMenuItem className=" sm:hidden">Cart</DropdownMenuItem>
+              <DropdownMenuItem>Orders</DropdownMenuItem>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>Theme</DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
@@ -98,16 +87,19 @@ const NavBar = () => {
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
               </DropdownMenuSub>
-              <DropdownMenuItem>
-                Settings
-                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-              </DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logOutHandler}>
-              Log out
-              <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
-            </DropdownMenuItem>
+            {true ? (
+              <DropdownMenuItem onClick={logOutHandler}>
+                Log out
+              </DropdownMenuItem>
+            ) : (
+              <>
+                <DropdownMenuItem>Create Account</DropdownMenuItem>
+                <DropdownMenuItem>Log in</DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

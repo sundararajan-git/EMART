@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Autoplay from "embla-carousel-autoplay";
 import {
   Carousel,
@@ -8,37 +7,39 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { Card } from "@/components/ui/card";
+import axiosInstance from "@/lib/axios/axios";
+import { useEffect, useRef, useState } from "react";
+import CategoriesCardSke from "@/components/skeletons/CategoriesCardSke";
 
 const Categories = () => {
-  const [products, setProducts] = React.useState([]);
+  const [products, setProducts] = useState([]);
+  const [loaded, setLoaded] = useState<boolean[]>([]);
+  const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: false }));
 
-  const plugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: false })
-  );
-
-  React.useEffect(() => {
+  useEffect(() => {
     getProducts();
   }, []);
 
   const getProducts = async () => {
     try {
-      const response = await fetch("http://localhost:3001/categories", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      const { data } = await axiosInstance.get("/emart/categories");
+      switch (data.status) {
+        case "FETCHED":
+          setProducts(data.categories);
+          setLoaded(Array(data.categories.length).fill(false));
+          break;
       }
-
-      const data = await response.json();
-      console.log(data); // Handle the data as needed
-      setProducts(data);
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     }
+  };
+
+  const handleLoad = (index) => {
+    setLoaded((prev) => {
+      const newLoaded = [...prev];
+      newLoaded[index] = true;
+      return newLoaded;
+    });
   };
 
   return (
@@ -50,41 +51,27 @@ const Categories = () => {
       // onMouseLeave={plugin.current.reset}
     >
       <CarouselContent className="flex items-center gap-2 w-full">
-        {products.map((item, index) => (
-          <CarouselItem key={index} className="max-w-[200px] h-fit">
-            <Card className="border-0 bg-muted items-center px-6 py-4 gap-8 h-[250px] hover:cursor-pointer">
-              <img
-                src={item.imageUrl}
-                alt={`slide-${index}`}
-                loading="eager"
-                className="object-contain w-full"
-              />
-              <p className="line-clamp-2">{item.name}</p>
-            </Card>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-    </Carousel>
-  );
-
-  return (
-    <Carousel
-      opts={{ loop: true }}
-      plugins={[plugin.current]}
-      className="w-full p-2"
-    >
-      <CarouselContent>
-        {images.map((src, index) => (
-          <CarouselItem key={index} className="w-[300px]">
-            <div className="w-full h-[60vh] relative">
-              <img
-                src={src}
-                alt={`slide-${index}`}
-                className="w-full h-full object-cover absolute brightness-75 rounded-lg"
-              />
-            </div>
-          </CarouselItem>
-        ))}
+        {products.map((item, index) => {
+          return (
+            <CarouselItem key={index} className="max-w-[200px] h-fit">
+              <Card
+                className={`border-0 bg-muted items-center px-6 py-4 gap-8 h-[250px] hover:cursor-pointer ${
+                  loaded[index] ? "flex" : "hidden"
+                }`}
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={`slide-${index}`}
+                  loading="eager"
+                  onLoad={() => handleLoad(index)}
+                  className="object-contain w-full"
+                />
+                <p className="line-clamp-2">{item.name}</p>
+              </Card>
+              {!loaded[index] && <CategoriesCardSke />}
+            </CarouselItem>
+          );
+        })}
       </CarouselContent>
     </Carousel>
   );

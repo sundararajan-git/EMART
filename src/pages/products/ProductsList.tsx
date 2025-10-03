@@ -12,17 +12,23 @@ import { IoBookmarkOutline } from "react-icons/io5";
 import FilterProducts from "./components/FilterProducts";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios/axios";
+import { useLocation } from "react-router-dom";
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search).get("q");
+}
 
 const ProductsList = () => {
+  const query = useQuery();
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
     getProducts();
-  }, []);
+  }, [query]);
 
   const getProducts = async () => {
     try {
-      const { data } = await axiosInstance.get("/emart/products");
+      const { data } = await axiosInstance.get(`/emart/search?q=${query}`);
       switch (data.status) {
         case "FETCHED":
           setProducts(data.products);

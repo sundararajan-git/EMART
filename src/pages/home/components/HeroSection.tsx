@@ -1,4 +1,5 @@
 "use client";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 
 const heroImages = [
@@ -10,6 +11,7 @@ const heroImages = [
 
 const HeroSection = () => {
   const [current, setCurrent] = useState(0);
+  const [imageLoad, setImageLoad] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -20,18 +22,22 @@ const HeroSection = () => {
 
   return (
     <div className="w-full h-[60vh] relative overflow-hidden rounded-lg">
+      {!imageLoad && <Skeleton className="h-full w-full" />}
       {heroImages.map((src, index) => (
         <img
           key={index}
           src={src}
           alt={`slide-${index}`}
           loading="eager"
+          onLoad={() => setImageLoad(true)}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity brightness-65 duration-1000 ${
             index === current ? "opacity-100" : "opacity-0"
-          }`}
+          } ${imageLoad ? "block" : "hidden"}`}
         />
       ))}
-      <div className="pointer-events-none absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white/90 to-transparent rounded-b-lg" />
+      {imageLoad && (
+        <div className="pointer-events-none absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white/90 to-transparent rounded-b-lg" />
+      )}
     </div>
   );
 };
