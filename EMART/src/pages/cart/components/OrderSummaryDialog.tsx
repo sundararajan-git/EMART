@@ -15,7 +15,9 @@ import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 
 export function OrderSummaryDialog() {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, _] = useState(1);
+
+  // console.log(setQuantity);
 
   return (
     <Dialog>

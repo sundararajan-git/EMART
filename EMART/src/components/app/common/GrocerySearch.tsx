@@ -7,45 +7,38 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import axiosInstance from "@/lib/axios/axios";
+import { showErrorToast } from "@/lib/utils";
+import { upQueries } from "@/store/slices/searchQueries";
+import type { RootState } from "@/store/store";
+import type { ErrorToastType } from "@/types/types";
 import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-
-const products = [
-  "Fresh Vegetables",
-  "Fruits",
-  "Snacks",
-  "Beverages",
-  "Organic Items",
-  "Meat & Fish",
-  "Dairy Products",
-  "Bread & Bakery",
-  "Rice & Grains",
-  "Spices & Masalas",
-];
 
 export function GrocerySearch() {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispath = useDispatch();
+  const searchQueries = useSelector((state: RootState) => state.searchQueries);
   const [query, setQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product) =>
+    return searchQueries.filter((product) =>
       product.toLowerCase().includes(query.toLowerCase())
     );
-  }, [query]);
+  }, [query, searchQueries]);
 
   const getProductList = async () => {
     try {
       const { data } = await axiosInstance.get(`/emart/product-lists`);
       switch (data.status) {
         case "FETCHED":
-          console.log(data.productsList);
+          dispath(upQueries({ value: data.productsList.productSearchQuery }));
           break;
       }
-      //
     } catch (err) {
-      console.error(err);
+      showErrorToast(err as ErrorToastType);
     }
   };
 
@@ -84,9 +77,9 @@ export function GrocerySearch() {
 
         {isFocused && filteredProducts.length > 0 && (
           <CommandGroup className="absolute top-full mt-1 w-full bg-background  rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
-            {filteredProducts.map((product) => (
+            {filteredProducts.map((product, index) => (
               <CommandItem
-                key={product}
+                key={index}
                 value={product}
                 onMouseDown={() => {
                   searchHandler(product);

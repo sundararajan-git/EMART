@@ -62,6 +62,7 @@ const ProductPage = () => {
   };
 
   const qtyChangeHandler = (type: string) => {
+    console.log(type);
     // setProducts((prev) => {
     //   const clone = prev.map((p) => {
     //     if (p.id === parseInt(id)) {
@@ -225,7 +226,7 @@ const ProductPage = () => {
         </div>
         <div className="overflow-auto space-y-4">
           <h2 className="text-xl font-bold">Related Products</h2>
-          {Array.from({ length: 10 }).map((i) => {
+          {Array.from({ length: 10 }).map(() => {
             return (
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nam

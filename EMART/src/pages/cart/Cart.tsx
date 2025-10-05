@@ -24,7 +24,7 @@ const products = [
 ];
 
 const Cart = () => {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState<any>([]);
 
   useEffect(() => {
     const cartList = products.filter((p) => p.isCart);
@@ -32,20 +32,20 @@ const Cart = () => {
     setCart(cartList);
   }, [products]);
 
-  const handleQuantityChange = (id, value) => {
-    setCart((prev) =>
-      prev.map((item) =>
+  const handleQuantityChange = (id: number, value: string) => {
+    setCart((prev: any) =>
+      prev.map((item: any) =>
         item.id === id ? { ...item, quantity: Number(value) } : item
       )
     );
   };
 
-  const handleRemove = (id) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
+  const handleRemove = (id: number) => {
+    setCart((prev: any) => prev.filter((item: any) => item.id !== id));
   };
 
   const subtotal = cart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc: number, item: any) => acc + item.price * item.quantity,
     0
   );
 
@@ -54,7 +54,7 @@ const Cart = () => {
       <h1 className="text-2xl font-bold mb-6">Shopping Cart</h1>
 
       <div className="grid sm:grid-cols-2 gap-4">
-        {cart.map((item) => (
+        {cart.map((item: any) => (
           <Card
             key={item.id}
             className="flex flex-col flex-wrap md:flex-row items-center p-4 gap-4"

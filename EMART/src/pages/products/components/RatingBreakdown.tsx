@@ -1,4 +1,3 @@
-import React from "react";
 import { Star } from "lucide-react";
 
 const ratingData = {
@@ -13,7 +12,7 @@ const ratingData = {
   ],
 };
 
-const RatingBreakdown = ({ rating }) => {
+const RatingBreakdown = ({ rating }: any) => {
   const maxCount = Math.max(...ratingData.breakdown.map((b) => b.count));
   return (
     <div className="w-full p-4 border rounded-md shadow-sm">

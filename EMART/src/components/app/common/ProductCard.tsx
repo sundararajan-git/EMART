@@ -59,7 +59,7 @@ const ProductCard: React.FC<ProductCardType> = (props) => {
           loading="eager"
           onLoad={() => handleLoad(index)}
           onClick={getId}
-          className="w-40 mx-auto h-40 object-cover rounded-xl"
+          className="w-40 mx-auto h-40 object-contain rounded-xl"
         />
       </CardHeader>
       <CardContent className="flex items-center justify-between p-0 hover:cursor-pointer">

@@ -10,13 +10,16 @@ import { Card } from "@/components/ui/card";
 import axiosInstance from "@/lib/axios/axios";
 import { useEffect, useRef, useState } from "react";
 import CategoriesCardSke from "@/components/skeletons/CategoriesCardSke";
-import type { Categories, ErrorToastType } from "@/types/types";
+import type { CategoriesType, ErrorToastType } from "@/types/types";
 import { showErrorToast } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { upQueries } from "@/store/slices/searchQueries";
 
 const Categories = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState<Categories[]>([]);
+  const dispath = useDispatch();
+  const [categories, setCategories] = useState<CategoriesType[]>([]);
   const [loaded, setLoaded] = useState<boolean[]>([]);
   const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: false }));
 
@@ -27,6 +30,8 @@ const Categories = () => {
         case "FETCHED":
           setCategories(data.categories);
           setLoaded(Array(data.categories.length).fill(false));
+          const cat = data.categories.map((i: CategoriesType) => i.name);
+          dispath(upQueries({ value: cat }));
           break;
       }
     } catch (err) {

@@ -1,4 +1,4 @@
-export type Categories = {
+export type CategoriesType = {
   name: string;
   imageUrl: string;
 };
