@@ -11,6 +11,7 @@ import { showErrorToast } from "@/lib/utils";
 import type { ErrorToastType, ProductType } from "@/types/types";
 import axiosInstance from "@/lib/axios/axios";
 import { BsCurrencyRupee } from "react-icons/bs";
+import { FaSpinner } from "react-icons/fa6";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -23,28 +24,33 @@ const ProductPage = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [pathname]);
 
-  const getProduct = async () => {
+  const getProduct = async (signal: AbortSignal) => {
     try {
       setIsloading(true);
       console.log(id);
-      const { data } = await axiosInstance.get(`/emart/product/${id}`);
+      const { data } = await axiosInstance.get(`/emart/product/${id}`, {
+        signal,
+      });
       console.log(data);
       switch (data.status) {
         case "FETCHED":
           setProduct(data.product);
+          setIsloading(false);
           break;
         default:
           break;
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
-    } finally {
-      setIsloading(false);
     }
   };
 
   useEffect(() => {
-    getProduct();
+    const controller = new AbortController();
+    getProduct(controller.signal);
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const handleAddToCart = () => {
@@ -80,7 +86,12 @@ const ProductPage = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex flex-col gap-2 items-center justify-center w-full h-[90vh]">
+        <FaSpinner className="text-primary size-6 animate-spin" />
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
@@ -89,7 +100,7 @@ const ProductPage = () => {
         <p>Home / {product.name}</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col-reverse sm:flex-row gap-4">
           <div className="flex sm:flex-col gap-2 overflow-x-auto sm:overflow-x-visible">
             {product?.images?.map((img, i) => (
               <img

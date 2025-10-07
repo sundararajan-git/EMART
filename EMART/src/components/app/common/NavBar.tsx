@@ -31,8 +31,6 @@ const NavBar = () => {
     (state: RootState) => state.user
   );
 
-  console.log(isVerified);
-
   const logOutHandler = () => {
     dispatch(setUser({ value: {} as userType }));
     localStorage.setItem("jwt", JSON.stringify(null));

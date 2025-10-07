@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios/axios";
 import ProductCardSke from "@/components/skeletons/ProductCardSke";
 import type { ErrorToastType, ProductType } from "@/types/types";
@@ -10,14 +10,19 @@ const BestSellers = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<ProductType[]>([]);
   const [loaded, setLoaded] = useState<boolean[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const getProducts = async () => {
+  const getProducts = async (signal: AbortSignal) => {
     try {
-      const { data } = await axiosInstance.get("/emart/best-sellers");
+      setLoading(true);
+      const { data } = await axiosInstance.get("/emart/best-sellers", {
+        signal,
+      });
       switch (data.status) {
         case "FETCHED":
           setProducts(data.products);
           setLoaded(Array(data.products.length).fill(false));
+          setLoading(false);
           break;
       }
     } catch (err) {
@@ -26,7 +31,11 @@ const BestSellers = () => {
   };
 
   useEffect(() => {
-    getProducts();
+    const controller = new AbortController();
+    getProducts(controller.signal);
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const handleLoad = (index: number) => {
@@ -65,20 +74,36 @@ const BestSellers = () => {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full">
-      {products.map((p, index) => {
-        return (
-          <div key={index} onClick={(e) => navProduct(p._id, e)}>
-            {!loaded[index] && <ProductCardSke />}
-            <ProductCard
-              product={p}
-              index={index}
-              loaded={loaded}
-              handleLoad={handleLoad}
-              addCartHandler={addCartHandler}
-            />
-          </div>
-        );
-      })}
+      <>
+        {loading ? (
+          <>
+            {Array.from({ length: 5 }).map((_, index) => {
+              return (
+                <React.Fragment key={index}>
+                  <ProductCardSke />
+                </React.Fragment>
+              );
+            })}
+          </>
+        ) : (
+          <>
+            {products.map((p, index) => {
+              return (
+                <div key={index} onClick={(e) => navProduct(p._id, e)}>
+                  {!loaded[index] && <ProductCardSke />}
+                  <ProductCard
+                    product={p}
+                    index={index}
+                    loaded={loaded}
+                    handleLoad={handleLoad}
+                    addCartHandler={addCartHandler}
+                  />
+                </div>
+              );
+            })}
+          </>
+        )}
+      </>
     </div>
   );
 };
