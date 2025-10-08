@@ -4,7 +4,7 @@ import { Skeleton } from "../ui/skeleton";
 
 const ProductCardSke = () => {
   return (
-    <Card className="overflow-hidden shadow-none h-fit p-6 gap-3 relative">
+    <Card className="overflow-hidden shadow-none h-fit p-4 gap-3 relative">
       <Skeleton className="w-40 h-40 mx-auto rounded-lg bg-gray-300 animate-pulse" />
 
       <div className="flex flex-col gap-1 sm:gap-2 mt-2">

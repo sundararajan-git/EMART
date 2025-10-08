@@ -6,13 +6,13 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import type { ProductType } from "@/types/types";
-import { Star } from "lucide-react";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { LuMinus, LuPlus } from "react-icons/lu";
 import { BsCurrencyRupee } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import toast from "react-hot-toast";
+import { FaRegStar, FaStar, FaStarHalf } from "react-icons/fa6";
 
 type ProductCardType = {
   product: ProductType;
@@ -38,6 +38,7 @@ const ProductCard: React.FC<ProductCardType> = (props) => {
   const getId = () => {
     console.log(_id);
   };
+
   return (
     <Card
       key={index}
@@ -67,17 +68,28 @@ const ProductCard: React.FC<ProductCardType> = (props) => {
           <p className="text-sm text-muted-foreground">{category}</p>
           <h3 className="text-base font-semibold">{name}</h3>
           <div className="hidden sm:flex flex-wrap items-start sm:items-center">
-            {[...Array(5)].map((_, index) => (
-              <Star
-                key={index}
-                size={20}
-                className={
-                  index + 1 < rating
-                    ? "text-yellow-500 fill-yellow-500"
-                    : "text-gray-300"
-                }
-              />
-            ))}
+            {[...Array(5)].map((_, index) => {
+              const starValue = index + 1;
+              if (rating >= starValue) {
+                return (
+                  <FaStar key={index} size={20} className="text-yellow-500" />
+                );
+              } else if (rating >= starValue - 0.5) {
+                return (
+                  <span key={index} className="relative inline-block">
+                    <FaRegStar size={20} className="text-gray-300" />
+                    <FaStarHalf
+                      size={20}
+                      className="text-yellow-500 absolute top-0 left-0"
+                    />
+                  </span>
+                );
+              } else {
+                return (
+                  <FaRegStar key={index} size={20} className="text-gray-300" />
+                );
+              }
+            })}
             <span className="ml-2 text-sm text-gray-600 dark:text-gray-500">
               ({totalReviews} reviews)
             </span>
@@ -119,7 +131,9 @@ const ProductCard: React.FC<ProductCardType> = (props) => {
             id="addCart"
             onClick={() => {
               if (!isVerified) {
-                toast.error("Please login");
+                toast("Please login", {
+                  icon: "🙏",
+                });
                 return null;
               }
               addCartHandler("ADD");

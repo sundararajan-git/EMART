@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/carousel";
 import { Card } from "@/components/ui/card";
 import axiosInstance from "@/lib/axios/axios";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CategoriesCardSke from "@/components/skeletons/CategoriesCardSke";
 import type { CategoriesType, ErrorToastType } from "@/types/types";
 import { showErrorToast } from "@/lib/utils";
@@ -22,14 +22,13 @@ const Categories = () => {
   const [categories, setCategories] = useState<CategoriesType[]>([]);
   const [loaded, setLoaded] = useState<boolean[]>([]);
   const [loading, setLoading] = useState(true);
-  const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: false }));
-
-  console.log(loaded);
+  const plugin = useRef(Autoplay({ delay: 1500, stopOnInteraction: true }));
 
   const getCategoriesList = async (signal: AbortSignal) => {
     try {
       setLoading(true);
       const { data } = await axiosInstance.get("/emart/categories", { signal });
+      console.log(data);
       switch (data.status) {
         case "FETCHED":
           setCategories(data.categories);
@@ -42,6 +41,7 @@ const Categories = () => {
           break;
       }
     } catch (err) {
+      console.log(err);
       showErrorToast(err as ErrorToastType);
     }
   };
@@ -59,7 +59,6 @@ const Categories = () => {
     setLoaded((prev) => {
       const newLoaded = [...prev];
       newLoaded[index] = true;
-      console.log(newLoaded);
       return newLoaded;
     });
   };
@@ -71,21 +70,21 @@ const Categories = () => {
   return (
     <Carousel
       className="w-full p-2 overflow-x-auto"
-      opts={{ loop: true }}
+      // opts={{ loop: true }}
       plugins={[plugin.current]}
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={plugin.current.reset}
+      onMouseEnter={() => plugin.current.stop()}
+      onMouseLeave={() => plugin.current.play()}
     >
       {loading ? (
-        <div className="flex items-center gap-2 w-full">
-          {Array.from({ length: 7 }).map((_, index) => {
+        <CarouselContent className="flex items-center gap-2 w-full">
+          {Array.from({ length: 10 }).map((_, index) => {
             return (
-              <React.Fragment key={index}>
+              <CarouselItem key={index} className="max-w-[200px] h-fit">
                 <CategoriesCardSke />
-              </React.Fragment>
+              </CarouselItem>
             );
           })}
-        </div>
+        </CarouselContent>
       ) : (
         <CarouselContent className="flex items-center gap-2 w-full">
           {categories.map((item, index) => {

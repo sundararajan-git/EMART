@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { FaRegStar, FaStar, FaStarHalf } from "react-icons/fa6";
 
 const ratingData = {
   average: 4.5,
@@ -17,21 +17,30 @@ const RatingBreakdown = ({ rating }: any) => {
   return (
     <div className="w-full p-4 border rounded-md shadow-sm">
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-2xl font-bold">
-          {ratingData.average.toFixed(1)}
-        </span>
+        <span className="text-2xl font-bold">{rating.toFixed(1)}</span>
         <div className="flex">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              size={20}
-              className={
-                i + 1 < rating
-                  ? "text-yellow-500 fill-yellow-500"
-                  : "text-gray-300"
-              }
-            />
-          ))}
+          {[...Array(5)].map((_, index) => {
+            const starValue = index + 1;
+            if (rating >= starValue) {
+              return (
+                <FaStar key={index} size={20} className="text-yellow-500" />
+              );
+            } else if (rating >= starValue - 0.5) {
+              return (
+                <span key={index} className="relative inline-block">
+                  <FaRegStar size={20} className="text-gray-300" />
+                  <FaStarHalf
+                    size={20}
+                    className="text-yellow-500 absolute top-0 left-0"
+                  />
+                </span>
+              );
+            } else {
+              return (
+                <FaRegStar key={index} size={20} className="text-gray-300" />
+              );
+            }
+          })}
         </div>
         <span className="text-gray-600 ml-2">
           ({ratingData.totalReviews} reviews)
