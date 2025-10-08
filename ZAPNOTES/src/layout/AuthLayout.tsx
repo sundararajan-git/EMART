@@ -2,7 +2,7 @@ import { useTheme } from "@/components/shadcn/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Outlet } from "react-router-dom";
 import { LuMoonStar, LuSunMedium } from "react-icons/lu";
-import { SiGitconnected } from "react-icons/si";
+import { RiNotificationSnoozeFill } from "react-icons/ri";
 
 const AuthLayout = () => {
   const { theme, setTheme } = useTheme();
@@ -11,9 +11,9 @@ const AuthLayout = () => {
       <div className="flex gap-2 justify-between p-8">
         <a href="#" className="flex items-center gap-2 font-medium">
           <div className="flex items-center justify-center rounded-md">
-            <SiGitconnected className="size-10 text-primary" />
+            <RiNotificationSnoozeFill className="size-10 text-primary" />
           </div>
-          <span className="font-semibold text-2xl">Connect</span>
+          <span className="font-semibold text-2xl">Zap</span>
         </a>
         <Button
           variant="ghost"
