@@ -17,6 +17,7 @@ import EmailVerify from "./pages/verify/EmailVerify";
 import ForgotPassword from "./pages/forgot-password/ForgotPassword";
 import ResetPassword from "./pages/reset-password/ResetPassword";
 import NotFound from "./pages/404/NotFound";
+import AdvancedChat from "./components/app/AdvancedChat";
 
 const App = () => {
   const { theme } = useTheme();
@@ -25,7 +26,7 @@ const App = () => {
   const validUser = async () => {
     try {
       const jwtString = localStorage.getItem("jwt");
-      const token = JSON.parse(jwtString ?? "");
+      const token = jwtString ? JSON.parse(jwtString) : null;
       if (token) {
         const { data } = await axiosInstance.get("/auth/valid-user", {
           headers: { Authorization: `Bearer ${token}` },
@@ -53,7 +54,7 @@ const App = () => {
       <Routes>
         <Route element={<AuthGuard />}>
           <Route element={<AppLayout />}>
-            <Route path="/" element={<p>Home</p>} />
+            <Route path="/" element={<AdvancedChat />} />
           </Route>
           <Route element={<AuthLayout />}>
             <Route path="/signup" element={<SignUp />} />
