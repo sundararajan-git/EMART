@@ -17,7 +17,6 @@ import EmailVerify from "./pages/verify/EmailVerify";
 import ForgotPassword from "./pages/forgot-password/ForgotPassword";
 import ResetPassword from "./pages/reset-password/ResetPassword";
 import NotFound from "./pages/404/NotFound";
-import { Out } from "./pages/Homepage";
 
 const App = () => {
   const { theme } = useTheme();
@@ -54,7 +53,7 @@ const App = () => {
       <Routes>
         <Route element={<AuthGuard />}>
           <Route element={<AppLayout />}>
-            <Route path="/" element={<Out />} />
+            <Route path="/" element={<p>Home</p>} />
           </Route>
           <Route element={<AuthLayout />}>
             <Route path="/signup" element={<SignUp />} />
