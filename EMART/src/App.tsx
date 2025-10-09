@@ -16,7 +16,7 @@ import NotFound from "./pages/404/NotFound";
 import { Toaster } from "react-hot-toast";
 import { useTheme } from "./components/shadcn/theme-provider";
 import { useEffect } from "react";
-import { showErrorToast } from "./lib/utils";
+import { getJWT, showErrorToast } from "./lib/utils";
 import type { ErrorToastType } from "./types/types";
 import { useDispatch } from "react-redux";
 import { setUser } from "./store/slices/userSlice";
@@ -27,12 +27,9 @@ const App = () => {
   const dispatch = useDispatch();
   const validUser = async () => {
     try {
-      const jwtString = localStorage.getItem("jwt");
-      const token = jwtString ? JSON.parse(jwtString) : null;
+      const token = getJWT();
       if (token) {
-        const { data } = await axiosInstance.get("/auth/valid-user", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { data } = await axiosInstance.get("/auth/valid-user");
         switch (data.status) {
           case "USER EXITS":
             dispatch(setUser({ value: data.user }));
@@ -42,7 +39,7 @@ const App = () => {
         }
       }
     } catch (err) {
-      localStorage.removeItem("jwt");
+      // localStorage.removeItem("jwt");
       showErrorToast(err as ErrorToastType);
     }
   };

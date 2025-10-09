@@ -27,6 +27,8 @@ export type ProductType = {
   totalReviews: number;
   rating: number;
   images: string[];
+  inCart?: boolean;
+  quantity?: number;
 };
 
 export type userType = {
@@ -39,4 +41,16 @@ export type userType = {
   updatedAt: Date;
   username: string;
   lastLogin: Date;
+};
+
+export type CartItemsType = {
+  product: string | ProductType;
+  quantity: number;
+  addedAt: Date;
+};
+
+export type CartType = {
+  user: string;
+  items: CartItemsType[];
+  updatedAt: Date;
 };

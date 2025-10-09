@@ -13,13 +13,14 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import toast from "react-hot-toast";
 import { FaRegStar, FaStar, FaStarHalf } from "react-icons/fa6";
+import { useState } from "react";
 
 type ProductCardType = {
   product: ProductType;
   index: number;
   loaded: boolean[];
   handleLoad: (index: number) => void;
-  addCartHandler: (type: string) => void;
+  addCartHandler: (type: string, _id: string) => void;
 };
 
 const ProductCard: React.FC<ProductCardType> = (props) => {
@@ -34,10 +35,9 @@ const ProductCard: React.FC<ProductCardType> = (props) => {
     price,
     discountPrice,
     _id,
+    // inCart,
   } = product;
-  const getId = () => {
-    console.log(_id);
-  };
+  const [quantity, setQuantity] = useState(product?.quantity || 0);
 
   return (
     <Card
@@ -59,7 +59,6 @@ const ProductCard: React.FC<ProductCardType> = (props) => {
           alt="img"
           loading="eager"
           onLoad={() => handleLoad(index)}
-          onClick={getId}
           className="w-40 mx-auto h-40 object-contain rounded-xl"
         />
       </CardHeader>
@@ -103,24 +102,30 @@ const ProductCard: React.FC<ProductCardType> = (props) => {
           </p>
           <p className="line-through text-xs text-muted-foreground">{price}</p>
         </div>
-        {!true ? (
-          <div className="hidden sm:flex items-center gap-2">
+        {quantity > 0 ? (
+          <div className="hidden sm:flex items-center gap-2 py-0.5">
             <Button
               className="rounded-sm font-medium cursor-pointer "
               variant="outline"
               id="removeQuantity"
               size="sm"
-              onClick={() => addCartHandler("INC")}
+              onClick={() => {
+                setQuantity((prev) => prev - 1);
+                addCartHandler("DEC", _id);
+              }}
             >
               <LuMinus />
             </Button>
-            <span>1</span>
+            <span>{quantity}</span>
             <Button
               className="rounded-sm font-medium cursor-pointer "
               variant="outline"
               id="addQuantity"
               size="sm"
-              onClick={() => addCartHandler("DEC")}
+              onClick={() => {
+                setQuantity((prev) => prev + 1);
+                addCartHandler("INC", _id);
+              }}
             >
               <LuPlus />
             </Button>
@@ -136,7 +141,8 @@ const ProductCard: React.FC<ProductCardType> = (props) => {
                 });
                 return null;
               }
-              addCartHandler("ADD");
+              setQuantity((prev) => prev + 1);
+              addCartHandler("ADD", _id);
             }}
           >
             Add

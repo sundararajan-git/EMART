@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios/axios";
 import ProductCardSke from "@/components/skeletons/ProductCardSke";
-import type { ErrorToastType, ProductType } from "@/types/types";
+import type { CartItemsType, ErrorToastType, ProductType } from "@/types/types";
 import { showErrorToast } from "@/lib/utils";
 import ProductCard from "@/components/app/common/ProductCard";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { type AppDispatch, type RootState } from "@/store/store";
+import { updateCart } from "@/store/slices/cartSlice";
 
 const BestSellers = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const cartCount = useSelector((state: RootState) => state.cart);
   const [products, setProducts] = useState<ProductType[]>([]);
   const [loaded, setLoaded] = useState<boolean[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,16 +62,77 @@ const BestSellers = () => {
     navigate(`/product/${id}`);
   };
 
-  const addCartHandler = (type: string) => {
+  const addtoCart = async (_id: string) => {
+    try {
+      const { data } = await axiosInstance.put("/emart/add-to-cart", {
+        productId: _id,
+        quantity: 1,
+      });
+      toast.success(data.message);
+      switch (data.status) {
+        case "UPDATED":
+          const cartItem = data.cart?.items.find(
+            (i: CartItemsType) => i.product === _id
+          );
+          setProducts((prev: ProductType[]) => {
+            return prev.map((i: ProductType) => {
+              if (i._id === _id && cartItem) {
+                return { ...i, quantity: cartItem.quantity, inCart: true };
+              }
+              return i;
+            });
+          });
+          dispatch(updateCart({ value: cartCount + 1 }));
+
+          break;
+      }
+    } catch (err) {
+      showErrorToast(err as ErrorToastType);
+    }
+  };
+
+  const upQuantity = async (type: string, _id: string) => {
+    try {
+      const { data } = await axiosInstance.put("/emart/up-quantity", {
+        productId: _id,
+        action: type,
+      });
+
+      if (data.message) {
+        toast.success(data.message);
+      }
+      switch (data.status) {
+        case "UPDATED":
+          const cartItem = data.cart?.items.find(
+            (i: CartItemsType) => i.product === _id
+          );
+          setProducts((prev: ProductType[]) => {
+            return prev.map((i: ProductType) => {
+              if (i._id === _id && cartItem) {
+                return { ...i, quantity: cartItem.quantity, inCart: true };
+              }
+              return i;
+            });
+          });
+          const count = type === "INC" ? cartCount + 1 : cartCount - 1;
+          dispatch(updateCart({ value: count }));
+          break;
+      }
+    } catch (err) {
+      showErrorToast(err as ErrorToastType);
+    }
+  };
+
+  const addCartHandler = (type: string, _id: string) => {
     switch (type) {
       case "ADD":
-        console.log("Added");
+        addtoCart(_id);
         break;
       case "INC":
-        console.log("Inc");
+        upQuantity("INC", _id);
         break;
       case "DEC":
-        console.log("Dec");
+        upQuantity("DEC", _id);
         break;
       default:
         break;

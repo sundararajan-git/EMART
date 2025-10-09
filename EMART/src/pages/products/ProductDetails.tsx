@@ -3,15 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams, useLocation } from "react-router-dom";
 import { FiMinus, FiPlus } from "react-icons/fi";
-import { RiShoppingBasketLine } from "react-icons/ri";
 import { toast } from "react-hot-toast";
 import { showErrorToast } from "@/lib/utils";
-import type { ErrorToastType, ProductType } from "@/types/types";
+import type { CartItemsType, ErrorToastType, ProductType } from "@/types/types";
 import axiosInstance from "@/lib/axios/axios";
 import { BsCurrencyRupee } from "react-icons/bs";
 import { FaRegStar, FaSpinner, FaStar, FaStarHalf } from "react-icons/fa6";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "@/store/store";
 import { ProductDetailsColumns } from "./components/ProductDetailsColumns";
 import { ProductReviews } from "./components/ProductReviews";
 import RelatedProducts from "./components/RelatedProducts";
@@ -23,10 +22,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { updateCart } from "@/store/slices/cartSlice";
 
 const ProductPage = () => {
   const { id } = useParams();
   const { pathname } = useLocation();
+  const dispatch = useDispatch<AppDispatch>();
+  const cartCount = useSelector((state: RootState) => state.cart);
   const { isVerified } = useSelector((state: RootState) => state.user);
   const [product, setProduct] = useState<ProductType>({} as ProductType);
   const [loading, setIsloading] = useState(true);
@@ -63,47 +65,83 @@ const ProductPage = () => {
     };
   }, [id]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!isVerified) {
       toast("Please login", {
         icon: "🙏",
       });
       return;
     }
-    // setProducts((prev) => {
-    //   const clone = prev.map((p) => {
-    //     if (p.id === id) {
-    //       return { ...p, isCart: true };
-    //     } else {
-    //       return p;
-    //     }
-    //   });
-    //   return clone;
-    // });
+
+    if (product?.quantity) {
+      toast("Already Added", {
+        icon: "🙏",
+      });
+      return;
+    }
+    try {
+      const { data } = await axiosInstance.put("/emart/add-to-cart", {
+        productId: id,
+        quantity: 1,
+      });
+      toast.success(data.message);
+      switch (data.status) {
+        case "UPDATED":
+          const cartItem = data.cart?.items.find(
+            (i: CartItemsType) => i.product === id
+          );
+          setProduct((prev: ProductType) => {
+            return { ...prev, quantity: cartItem.quantity, inCart: true };
+          });
+          dispatch(updateCart({ value: cartCount + 1 }));
+          break;
+      }
+    } catch (err) {
+      showErrorToast(err as ErrorToastType);
+    }
   };
 
-  const qtyChangeHandler = (type: string) => {
+  const qtyChangeHandler = async (type: string) => {
     if (!isVerified) {
       toast("Please login", {
         icon: "🙏",
       });
       return;
     }
-    console.log(type);
-    // setProducts((prev) => {
-    //   const clone = prev.map((p) => {
-    //     if (p.id === parseInt(id)) {
-    //       if (type === "INC") {
-    //         return { ...p, quantity: Math.max(p.quantity + 1, 1) };
-    //       } else if (type === "DEC") {
-    //         return { ...p, quantity: Math.max(p.quantity - 1, 1) };
-    //       }
-    //     } else {
-    //       return p;
-    //     }
-    //   });
-    //   return clone;
-    // });
+    if (type === "INC" && !product.quantity) {
+      toast("Please add to cart", {
+        icon: "🙏",
+      });
+      return;
+    }
+    try {
+      const { data } = await axiosInstance.put("/emart/up-quantity", {
+        productId: id,
+        action: type,
+      });
+
+      if (data.message) {
+        toast.success(data.message);
+      }
+      switch (data.status) {
+        case "UPDATED":
+          const cartItem = data.cart?.items.find(
+            (i: CartItemsType) => i.product === id
+          );
+          setProduct((prev: ProductType) => {
+            return {
+              ...prev,
+              quantity: cartItem?.quantity ?? 0,
+              inCart: cartItem?.quantity ? true : false,
+            };
+          });
+          const count = type === "INC" ? cartCount + 1 : cartCount - 1;
+          dispatch(updateCart({ value: count }));
+          break;
+      }
+    } catch (err) {
+      showErrorToast(err as ErrorToastType);
+    }
   };
 
   if (loading) {
@@ -168,9 +206,9 @@ const ProductPage = () => {
           <p className="text-xl font-bold text-gray-800 dark:text-gray-400 mt-2 inline-flex items-center gap-1">
             <BsCurrencyRupee />
             {product.discountPrice.toFixed(2)}
-            <p className="line-through text-sm text-muted-foreground ml-2">
+            <span className="line-through text-sm text-muted-foreground ml-2">
               {product.price}
-            </p>
+            </span>
           </p>
           <div className="flex items-center mt-2">
             {[...Array(5)].map((_, index) => {
@@ -209,17 +247,18 @@ const ProductPage = () => {
                 onClick={() => qtyChangeHandler("DEC")}
                 className="size-8 bg-gray-100 hover:bg-gray-200 rounded-sm cursor-pointer"
                 variant="outline"
-                // disabled={product?.quantity === 1}
+                disabled={(product?.quantity ?? 0) <= 1}
               >
                 <FiMinus />
               </Button>
               <span className="px-4 py-1 text-center w-12">
-                {/* {product?.quantity} */}1
+                {product?.quantity || 1}
               </span>
               <Button
                 onClick={() => qtyChangeHandler("INC")}
                 className="size-8 rounded-sm bg-gray-100 hover:bg-gray-200 cursor-pointer"
                 variant="outline"
+                // disabled={(product?.quantity ?? 0) < 1}
               >
                 <FiPlus />
               </Button>
@@ -232,8 +271,7 @@ const ProductPage = () => {
               className="w-fit flex items-center justify-center gap-2 rounded-sm cursor-pointer text-black"
               variant="default"
             >
-              <RiShoppingBasketLine className="size-4" />
-              <span>Add to Cart</span>
+              {!product?.quantity ? <span>Add to Cart</span> : "Added"}
             </Button>
           </div>
 

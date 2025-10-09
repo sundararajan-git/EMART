@@ -19,17 +19,24 @@ import { SiSinglestore } from "react-icons/si";
 import { GrocerySearch } from "./GrocerySearch";
 import { IoCartOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "@/store/store";
+import type { RootState, AppDispatch } from "@/store/store";
 import { setUser } from "@/store/slices/userSlice";
 import type { userType } from "@/types/types";
+import { useEffect } from "react";
+import { getCartCounts } from "@/store/slices/cartSlice";
 
 const NavBar = () => {
   const { setTheme } = useTheme();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { isVerified, profilePic } = useSelector(
     (state: RootState) => state.user
   );
+  const cartCount = useSelector((state: RootState) => state.cart);
+
+  useEffect(() => {
+    dispatch(getCartCounts());
+  }, []);
 
   const logOutHandler = () => {
     dispatch(setUser({ value: {} as userType }));
@@ -58,7 +65,7 @@ const NavBar = () => {
               variant="default"
               className="rounded-full w-5 h-5 bg-green-600 absolute -top-2 left-5"
             >
-              0
+              {cartCount}
             </Badge>
           ) : null}
         </div>
