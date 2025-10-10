@@ -20,15 +20,15 @@ import { FaRegStar } from "react-icons/fa";
 import { RiContactsBook3Line } from "react-icons/ri";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
-import ChatsUserList from "../app/ChatsUserList";
+import ChatsUserList from "../app/sidebar/ChatsUserList";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 import { LuX } from "react-icons/lu";
-import StatusList from "../app/StatusList";
-import FavouritsList from "../app/FavouritsList";
-import ContactList from "../app/ContactList";
-import NotificationList from "../app/NotificationList";
+import StatusList from "../app/sidebar/StatusList";
+import FavouritsList from "../app/sidebar/FavouritsList";
+import ContactList from "../app/sidebar/ContactList";
+import NotificationList from "../app/sidebar/NotificationList";
 
 type AppSidebarPropsType = React.ComponentProps<typeof Sidebar>;
 
@@ -147,15 +147,11 @@ export const AppSidebar: React.FC<AppSidebarPropsType> = ({ ...props }) => {
           )}
         </SidebarHeader>
         <SidebarContent>
-          <SidebarGroup className="px-0">
-            <SidebarGroupContent>
-              {activeItem?.title === "Chats" && <ChatsUserList />}
-              {activeItem?.title === "Status" && <StatusList />}
-              {activeItem?.title === "Favourits" && <FavouritsList />}
-              {activeItem?.title === "Contacts" && <ContactList />}
-              {activeItem?.title === "Notifications" && <NotificationList />}
-            </SidebarGroupContent>
-          </SidebarGroup>
+          {activeItem?.title === "Chats" && <ChatsUserList />}
+          {activeItem?.title === "Status" && <StatusList />}
+          {activeItem?.title === "Favourits" && <FavouritsList />}
+          {activeItem?.title === "Contacts" && <ContactList />}
+          {activeItem?.title === "Notifications" && <NotificationList />}
         </SidebarContent>
       </Sidebar>
     </Sidebar>
@@ -173,7 +169,7 @@ const data = {
       title: "Chats",
       url: "#",
       icon: <IoChatbubbleEllipsesOutline className="size-6" />,
-      isActive: true,
+      isActive: false,
     },
     {
       title: "Status",
@@ -196,7 +192,7 @@ const data = {
       title: "Contacts",
       url: "#",
       icon: <RiContactsBook3Line className="size-6" />,
-      isActive: false,
+      isActive: true,
     },
     {
       title: "Notifications",

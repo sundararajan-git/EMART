@@ -8,6 +8,9 @@ export type UserType = {
   updatedAt: Date;
   username: string;
   lastLogin: Date;
+
+  // CONNECT
+  bio?: string;
 };
 
 export type ErrorToastType = {

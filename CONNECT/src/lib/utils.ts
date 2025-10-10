@@ -24,3 +24,9 @@ export const showErrorToast = (err: ErrorToastType) => {
     toast.error(String(err));
   }
 };
+
+export const getJWT = () => {
+  const jwtString = localStorage.getItem("jwt");
+  const token = jwtString ? JSON.parse(jwtString) : null;
+  return token;
+};
