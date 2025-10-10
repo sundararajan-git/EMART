@@ -3,12 +3,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AddContactModel from "./components/AddContactModel";
 import { useEffect, useState } from "react";
 import { showErrorToast } from "@/lib/utils";
-import type { ErrorToastType, UserType } from "@/types/types";
+import type { ErrorToastType } from "@/types/types";
 import axiosInstance from "@/lib/axios/axios";
 import Spinner from "../Spinner";
+import type { AppDisapatch, RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSelectedContact,
+  updateContactList,
+} from "@/store/slices/contactSlice";
 
 const ContactList = () => {
-  const [contactList, setContactList] = useState<UserType[]>([]);
+  const dispatch = useDispatch<AppDisapatch>();
+  const { contactList } = useSelector((state: RootState) => state.contact);
   const [loading, setLoading] = useState(true);
 
   const getContacts = async (signal: AbortSignal) => {
@@ -19,7 +26,7 @@ const ContactList = () => {
       });
       switch (data.status) {
         case "FETCHED":
-          setContactList(data.contacts);
+          dispatch(updateContactList(data.contacts));
           break;
       }
     } catch (err) {
@@ -37,8 +44,6 @@ const ContactList = () => {
     };
   }, []);
 
-  console.log(contactList);
-
   return (
     <div className="w-full h-full">
       {loading ? (
@@ -51,6 +56,9 @@ const ContactList = () => {
             <div
               key={user._id}
               className="flex items-center justify-between p-3 hover:bg-muted cursor-pointer "
+              onClick={() => {
+                dispatch(setSelectedContact(user));
+              }}
             >
               <div className="flex items-center space-x-3 w-full">
                 <div className="relative">
@@ -70,7 +78,7 @@ const ContactList = () => {
           ))}
         </>
       )}
-      <AddContactModel setContactList={setContactList} />
+      <AddContactModel />
     </div>
   );
 };

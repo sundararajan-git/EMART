@@ -1,6 +1,7 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import type { UserType } from "@/types/types";
 import { Plus } from "lucide-react";
 
 interface Status {
@@ -119,3 +120,20 @@ const StatusList = () => {
 };
 
 export default StatusList;
+
+type AvatarStatusPropsType = {
+  user: UserType;
+};
+
+export const AvatarStatus: React.FC<AvatarStatusPropsType> = (props) => {
+  const { user } = props;
+  return (
+    <Avatar className="h-5 w-5 size-6 rounded-full hover:cursor-pointer p-0 m-0 bg-gray-600 ring-1 ring-offset-2 ring-offset-background  ring-green-600">
+      <AvatarImage
+        src={user.profilePic ?? "https://github.com/shadcn.png"}
+        alt="user"
+      />
+      <AvatarFallback>{user.username.charAt(0) ?? "U"}</AvatarFallback>
+    </Avatar>
+  );
+};

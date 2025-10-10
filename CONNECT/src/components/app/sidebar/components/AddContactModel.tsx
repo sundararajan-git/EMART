@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,14 +16,13 @@ import { LuPlus } from "react-icons/lu";
 import axiosInstance from "@/lib/axios/axios";
 import { showErrorToast } from "@/lib/utils";
 import toast from "react-hot-toast";
-import type { ErrorToastType, UserType } from "@/types/types";
+import type { ErrorToastType } from "@/types/types";
+import { useDispatch } from "react-redux";
+import type { AppDisapatch } from "@/store/store";
+import { updateContactList } from "@/store/slices/contactSlice";
 
-type AddContactModalPropsType = {
-  setContactList: Dispatch<SetStateAction<UserType[]>>;
-};
-
-const AddContactModal: React.FC<AddContactModalPropsType> = (props) => {
-  const { setContactList } = props;
+const AddContactModal = () => {
+  const dispatch = useDispatch<AppDisapatch>();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,9 +42,7 @@ const AddContactModal: React.FC<AddContactModalPropsType> = (props) => {
       toast.success(data.message);
       switch (data.status) {
         case "ADDED":
-          setContactList(() => {
-            return data.contacts;
-          });
+          dispatch(updateContactList(data.contacts));
           setEmail("");
           setOpen(false);
           break;

@@ -15,26 +15,31 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FaRegStar } from "react-icons/fa";
-import { RiContactsBook3Line } from "react-icons/ri";
-import { IoMdNotificationsOutline } from "react-icons/io";
-import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import ChatsUserList from "../app/sidebar/ChatsUserList";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 import { LuX } from "react-icons/lu";
-import StatusList from "../app/sidebar/StatusList";
+import StatusList, { AvatarStatus } from "../app/sidebar/StatusList";
 import FavouritsList from "../app/sidebar/FavouritsList";
 import ContactList from "../app/sidebar/ContactList";
 import NotificationList from "../app/sidebar/NotificationList";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDisapatch, RootState } from "@/store/store";
+import { updateRoute } from "@/store/slices/sidebarSlice";
+import { sidebarIcons } from "@/lib/constant";
 
 type AppSidebarPropsType = React.ComponentProps<typeof Sidebar>;
 
 export const AppSidebar: React.FC<AppSidebarPropsType> = ({ ...props }) => {
-  const [activeItem, setActiveItem] = useState(data.navMain[0]);
   const { setOpen } = useSidebar();
+  const navigate = useNavigate();
+  const { navRoute, activeItem } = useSelector(
+    (state: RootState) => state.sidebar
+  );
+  const user = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch<AppDisapatch>();
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -57,9 +62,9 @@ export const AppSidebar: React.FC<AppSidebarPropsType> = ({ ...props }) => {
                 className="md:h-8 md:p-0 hover:bg-transparent hover:text-primary active:bg-transparent"
               >
                 <div className="text-primary flex size-8 items-center justify-center rounded-lg">
-                  <a href="#">
+                  <span>
                     <SiGitconnected className="size-8" />
-                  </a>
+                  </span>
                 </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -69,7 +74,7 @@ export const AppSidebar: React.FC<AppSidebarPropsType> = ({ ...props }) => {
           <SidebarGroup>
             <SidebarGroupContent className="px-1.5 md:px-0 mt-4">
               <SidebarMenu className="gap-6">
-                {data.navMain.map((item) => (
+                {navRoute.map((item) => (
                   <SidebarMenuItem
                     key={item.title}
                     className="flex justify-center"
@@ -80,7 +85,8 @@ export const AppSidebar: React.FC<AppSidebarPropsType> = ({ ...props }) => {
                         hidden: false,
                       }}
                       onClick={() => {
-                        setActiveItem(item);
+                        navigate(item.url);
+                        dispatch(updateRoute(item));
                         setOpen(true);
                       }}
                       isActive={activeItem?.title === item.title}
@@ -90,7 +96,13 @@ export const AppSidebar: React.FC<AppSidebarPropsType> = ({ ...props }) => {
                       {activeItem?.title === item.title && (
                         <span className="border-1 border-blue-600 h-6 absolute left-0 rounded"></span>
                       )}
-                      <div>{item.icon}</div>
+                      <div>
+                        {item.title === "Status" ? (
+                          <AvatarStatus user={user} />
+                        ) : (
+                          sidebarIcons[item.title]
+                        )}
+                      </div>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -100,7 +112,7 @@ export const AppSidebar: React.FC<AppSidebarPropsType> = ({ ...props }) => {
         </SidebarContent>
         <SidebarFooter>
           <SidebarTrigger className="" />
-          <NavUser user={data.user} />
+          <NavUser />
         </SidebarFooter>
       </Sidebar>
       <Sidebar
@@ -156,50 +168,4 @@ export const AppSidebar: React.FC<AppSidebarPropsType> = ({ ...props }) => {
       </Sidebar>
     </Sidebar>
   );
-};
-
-const data = {
-  user: {
-    name: "UN",
-    email: "un@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Chats",
-      url: "#",
-      icon: <IoChatbubbleEllipsesOutline className="size-6" />,
-      isActive: false,
-    },
-    {
-      title: "Status",
-      url: "#",
-      icon: (
-        <Avatar className="h-5 w-5 size-6 rounded-full hover:cursor-pointer p-0 m-0 bg-gray-600 ring-1 ring-offset-2 ring-offset-background  ring-green-600">
-          <AvatarImage src="https://github.com/shadcn.png" alt="user" />
-          <AvatarFallback>U</AvatarFallback>
-        </Avatar>
-      ),
-      isActive: false,
-    },
-    {
-      title: "Favourits",
-      url: "#",
-      icon: <FaRegStar className="size-5" />,
-      isActive: false,
-    },
-    {
-      title: "Contacts",
-      url: "#",
-      icon: <RiContactsBook3Line className="size-6" />,
-      isActive: true,
-    },
-    {
-      title: "Notifications",
-      url: "#",
-      icon: <IoMdNotificationsOutline className="size-6" />,
-      isActive: false,
-    },
-  ],
-  mails: [],
 };

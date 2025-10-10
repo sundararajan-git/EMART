@@ -1,22 +1,24 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { AppSidebar } from "@/components/shadcn/app-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import AdvancedChat from "@/components/app/AdvancedChat";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDisapatch, RootState } from "@/store/store";
+import { updateRoute } from "@/store/slices/sidebarSlice";
 
 const AppLayout = () => {
+  const dispatch = useDispatch<AppDisapatch>();
+  const { navRoute } = useSelector((state: RootState) => state.sidebar);
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname.toLowerCase();
+    const active = navRoute.find(
+      (i) => i.url === (path === "/" ? "/chats" : path)
+    );
+    dispatch(updateRoute(active));
+  }, []);
+
   return (
     <>
       <SidebarProvider

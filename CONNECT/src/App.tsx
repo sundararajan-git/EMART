@@ -74,6 +74,7 @@ const App = () => {
         <Route element={<AuthGuard />}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/chats" element={<HomePage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/favourits" element={<FavouritsPage />} />
             <Route path="/contacts" element={<ContactPage />} />

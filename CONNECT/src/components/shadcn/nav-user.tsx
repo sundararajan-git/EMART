@@ -17,17 +17,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/store";
+import { FaRegCircleUser } from "react-icons/fa6";
 
-type NavUserPropsType = {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-};
-
-export const NavUser: React.FC<NavUserPropsType> = ({ user }) => {
+export const NavUser = () => {
   const { isMobile } = useSidebar();
+  const user = useSelector((state: RootState) => state.user);
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -38,8 +34,8 @@ export const NavUser: React.FC<NavUserPropsType> = ({ user }) => {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground rounded-full md:h-8 md:p-0 p-0 w-fit"
             >
               <Avatar className="h-8 w-8 rounded-full hover:cursor-pointer">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>UN</AvatarFallback>
+                <AvatarImage src={user.profilePic} alt={user.username} />
+                <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
               </Avatar>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -52,17 +48,21 @@ export const NavUser: React.FC<NavUserPropsType> = ({ user }) => {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-full cursor-pointer">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback>UN</AvatarFallback>
+                  <AvatarImage src={user.profilePic} alt={user.username} />
+                  <AvatarFallback>{user.username?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">{user.username}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <FaRegCircleUser />
+                Account
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <LuSettings />
                 Settings
