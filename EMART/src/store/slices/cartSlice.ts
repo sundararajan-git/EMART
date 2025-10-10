@@ -19,6 +19,8 @@ export const getCartCounts = createAsyncThunk(
         case "FETCHED":
           return data.cartCount;
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);

@@ -1,13 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { validateForm } from "@/lib/helper";
 import axiosInstance from "@/lib/axios/axios";
+import { useState } from "react";
+import { showErrorToast } from "@/lib/utils";
+import type { ErrorToastType } from "@/types/types";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const { token } = useParams();
+  const [btnLoading, setBtnLoading] = useState(false);
+
   const logInBtnHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -18,23 +24,25 @@ const ResetPassword = () => {
         return toast.error("Invalid inputs");
       }
 
+      setBtnLoading(true);
+
       const { data } = await axiosInstance.put(
-        `/auth/reset-password/${"a38ab5262a0db7fb370374326781674844d37ec797904d689524f32741e80878"}`,
+        `/auth/reset-password/${token}`,
         formJson
       );
 
-      console.log("Data", data);
       toast.success(data.message);
       switch (data.status) {
         case "PASSWORD_RESET_DONE":
           navigate("/login");
           break;
         default:
-          toast.error("Unkown action");
-          null;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
-      console.error(err);
+      showErrorToast(err as ErrorToastType);
+    } finally {
+      setBtnLoading(false);
     }
   };
   return (
@@ -60,8 +68,12 @@ const ResetPassword = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full hover:cursor-pointer">
-              Submit
+            <Button
+              type="submit"
+              className="w-full hover:cursor-pointer"
+              disabled={btnLoading}
+            >
+              {btnLoading ? "Submiting..." : "Submit"}
             </Button>
           </div>
         </form>

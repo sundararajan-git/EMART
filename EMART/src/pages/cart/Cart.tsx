@@ -38,7 +38,7 @@ const Cart = () => {
           setLoading(false);
           break;
         default:
-          break;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -67,6 +67,8 @@ const Cart = () => {
             return prev.filter((i) => (i.product as ProductType)._id !== id);
           });
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -108,6 +110,8 @@ const Cart = () => {
           const count = type === "INC" ? cartCount + 1 : cartCount - 1;
           dispatch(updateCart({ value: count }));
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);

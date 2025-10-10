@@ -5,9 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { validateForm } from "@/lib/helper";
 import axiosInstance from "@/lib/axios/axios";
+import { useState } from "react";
+import { showErrorToast } from "@/lib/utils";
+import type { ErrorToastType } from "@/types/types";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [btnLoading, setBtnLoading] = useState(false);
+
   const signUpBtnHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -35,25 +40,29 @@ const SignUp = () => {
         );
       }
 
+      setBtnLoading(true);
       formJson.software = "EMart";
 
       const { data } = await axiosInstance.post("/auth/signup", formJson);
+
       toast.success(data.message);
       switch (data.status) {
         case "ALREADY_VERIFIED":
           navigate("/login");
           break;
         case "RESEND_VERIFICATION":
-          navigate("/verify");
+          navigate(`/verify/${data.user._id}`);
           break;
         case "NEW_USER":
-          navigate("/verify");
+          navigate(`/verify/${data.user._id}`);
           break;
         default:
-          null;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
-      console.error(err);
+      showErrorToast(err as ErrorToastType);
+    } finally {
+      setBtnLoading(false);
     }
   };
   return (
@@ -105,8 +114,13 @@ const SignUp = () => {
                 required
               />
             </div>
-            <Button type="submit" variant="default" className="w-full py-4">
-              Signup
+            <Button
+              type="submit"
+              variant="default"
+              className="w-full py-4 hover:cursor-pointer"
+              disabled={btnLoading}
+            >
+              {btnLoading ? "Signing..." : "Signup"}
             </Button>
           </div>
           <div className="text-center text-sm">

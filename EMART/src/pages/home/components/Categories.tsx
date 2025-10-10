@@ -38,7 +38,7 @@ const Categories = () => {
           setLoading(false);
           break;
         default:
-          break;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       console.log(err);

@@ -45,7 +45,7 @@ const RelatedProducts: React.FC<RelatedProductsPropsTypes> = (props) => {
           setLoading(false);
           break;
         default:
-          break;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -99,6 +99,8 @@ const RelatedProducts: React.FC<RelatedProductsPropsTypes> = (props) => {
           });
           dispatch(updateCart({ value: cartCount + 1 }));
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -131,6 +133,8 @@ const RelatedProducts: React.FC<RelatedProductsPropsTypes> = (props) => {
           const count = type === "INC" ? cartCount + 1 : cartCount - 1;
           dispatch(updateCart({ value: count }));
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -147,8 +151,6 @@ const RelatedProducts: React.FC<RelatedProductsPropsTypes> = (props) => {
         break;
       case "DEC":
         upQuantity("DEC", _id);
-        break;
-      default:
         break;
     }
   };

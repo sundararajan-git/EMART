@@ -5,9 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { validateForm } from "@/lib/helper";
 import axiosInstance from "@/lib/axios/axios";
+import { useState } from "react";
+import type { ErrorToastType } from "@/types/types";
+import { showErrorToast } from "@/lib/utils";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const [btnLoading, setBtnLoading] = useState(false);
+
   const logInBtnHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -18,6 +23,7 @@ const ForgotPassword = () => {
         return toast.error("Invalid inputs");
       }
 
+      setBtnLoading(true);
       formJson.software = "EMart";
 
       const { data } = await axiosInstance.post(
@@ -29,13 +35,15 @@ const ForgotPassword = () => {
 
       switch (data.status) {
         case "FORGOT_PASSWORD_REQUEST":
-          // navigate("/login");
+          navigate("/login");
           break;
         default:
-          null;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
-      console.error(err);
+      showErrorToast(err as ErrorToastType);
+    } finally {
+      setBtnLoading(false);
     }
   };
   return (
@@ -64,8 +72,12 @@ const ForgotPassword = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full hover:cursor-pointer">
-              Send
+            <Button
+              type="submit"
+              className="w-full hover:cursor-pointer"
+              disabled={btnLoading}
+            >
+              {btnLoading ? "Sending.." : "Send"}
             </Button>
           </div>
           <div className="text-center text-sm">

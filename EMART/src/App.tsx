@@ -35,7 +35,7 @@ const App = () => {
             dispatch(setUser({ value: data.user }));
             break;
           default:
-            break;
+            console.warn("Unhandled status:", data.status);
         }
       }
     } catch (err) {
@@ -62,7 +62,7 @@ const App = () => {
           <Route element={<AuthLayout />}>
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/verify" element={<EmailVerify />} />
+            <Route path="/verify/:token" element={<EmailVerify />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
           </Route>

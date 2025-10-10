@@ -36,6 +36,8 @@ export function GrocerySearch() {
         case "FETCHED":
           dispath(upQueries({ value: data.productsList.productSearchQuery }));
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);

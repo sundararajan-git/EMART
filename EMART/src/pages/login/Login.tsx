@@ -7,10 +7,15 @@ import { validateForm } from "@/lib/helper";
 import axiosInstance from "@/lib/axios/axios";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/store/slices/userSlice";
+import { useState } from "react";
+import type { ErrorToastType } from "@/types/types";
+import { showErrorToast } from "@/lib/utils";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [btnLoading, setBtnLoading] = useState(false);
+
   const logInBtnHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -21,6 +26,7 @@ const Login = () => {
         return toast.error("Invalid inputs");
       }
 
+      setBtnLoading(true);
       formJson.software = "EMart";
 
       const { data } = await axiosInstance.post("/auth/login", formJson);
@@ -34,13 +40,15 @@ const Login = () => {
           navigate("/");
           break;
         case "RESEND_VERIFICATION":
-          navigate("/verify");
+          navigate(`/verify/${data.user._id}`);
           break;
         default:
-          null;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
-      console.error(err);
+      showErrorToast(err as ErrorToastType);
+    } finally {
+      setBtnLoading(false);
     }
   };
   return (
@@ -86,8 +94,12 @@ const Login = () => {
                 required
               />
             </div>
-            <Button type="submit" className="w-full hover:cursor-pointer">
-              Login
+            <Button
+              type="submit"
+              className="w-full hover:cursor-pointer"
+              disabled={btnLoading}
+            >
+              {btnLoading ? "logging.." : "Login"}
             </Button>
           </div>
           <div className="text-center text-sm">

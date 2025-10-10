@@ -50,7 +50,7 @@ const ProductPage = () => {
           setIsloading(false);
           break;
         default:
-          break;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -95,6 +95,8 @@ const ProductPage = () => {
           });
           dispatch(updateCart({ value: cartCount + 1 }));
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -138,6 +140,8 @@ const ProductPage = () => {
           const count = type === "INC" ? cartCount + 1 : cartCount - 1;
           dispatch(updateCart({ value: count }));
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);

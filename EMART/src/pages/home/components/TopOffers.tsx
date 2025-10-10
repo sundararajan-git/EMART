@@ -29,6 +29,8 @@ const TopOffers = () => {
           setLoaded(Array(data.products.length).fill(false));
           setLoading(false);
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -82,6 +84,8 @@ const TopOffers = () => {
           });
           dispatch(updateCart({ value: cartCount + 1 }));
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -114,6 +118,8 @@ const TopOffers = () => {
           const count = type === "INC" ? cartCount + 1 : cartCount - 1;
           dispatch(updateCart({ value: count }));
           break;
+        default:
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
       showErrorToast(err as ErrorToastType);
@@ -130,8 +136,6 @@ const TopOffers = () => {
         break;
       case "DEC":
         upQuantity("DEC", _id);
-        break;
-      default:
         break;
     }
   };
