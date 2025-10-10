@@ -1,13 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axiosInstance from "@/lib/axios/axios";
+import { showErrorToast } from "@/lib/utils";
+import type { ErrorToastType } from "@/types/types";
 import { useState, useRef } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const EmailVerify = () => {
   const navigate = useNavigate();
+  const { token } = useParams();
   const [otp, setOtp] = useState(new Array(6).fill(""));
+  const [btnLoading, setBtnLoading] = useState(false);
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
   const handleChange = (
@@ -45,31 +49,29 @@ const EmailVerify = () => {
       });
     }
     if (e.key === "Enter") {
-      getOTPValue();
+      verifyHandler();
     }
   };
 
-  const getOTPValue = async () => {
+  const verifyHandler = async () => {
     try {
-      const { data } = await axiosInstance.post(
-        `/auth/verify-email/${"68deaca2e0665b119bb75692"}`,
-        {
-          code: otp.join(""),
-          software: "EMart",
-        }
-      );
-      console.log("Data", data);
+      setBtnLoading(true);
+      const { data } = await axiosInstance.post(`/auth/verify-email/${token}`, {
+        code: otp.join(""),
+        software: "Connect",
+      });
       toast.success(data.message);
       switch (data.status) {
         case "VERIFIED":
           navigate("/login");
           break;
         default:
-          toast.error("Unkown action");
-          null;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err: any) {
-      toast.error(err);
+      showErrorToast(err as ErrorToastType);
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -101,10 +103,11 @@ const EmailVerify = () => {
           </div>
           <Button
             variant="default"
-            className="rounded-sm"
-            onClick={getOTPValue}
+            className="rounded-sm hover:cursor-pointer"
+            onClick={verifyHandler}
+            disabled={btnLoading}
           >
-            Verify OTP
+            {btnLoading ? "Verifying.." : "Verify OTP"}
           </Button>
         </div>
       </div>

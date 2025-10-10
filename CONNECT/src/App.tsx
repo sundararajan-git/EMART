@@ -11,11 +11,11 @@ import { setUser } from "./store/slices/userSlice";
 import AuthGuard from "./guards/AuthGuard";
 import AppLayout from "./layout/AppLayout";
 import AuthLayout from "./layout/AuthLayout";
-import SignUp from "./pages/signup/SignUp";
-import Login from "./pages/login/Login";
-import EmailVerify from "./pages/verify/EmailVerify";
-import ForgotPassword from "./pages/forgot-password/ForgotPassword";
-import ResetPassword from "./pages/reset-password/ResetPassword";
+import SignUp from "./pages/auth/signup/SignUp";
+import Login from "./pages/auth/login/Login";
+import EmailVerify from "./pages/auth/verify/EmailVerify";
+import ForgotPassword from "./pages/auth/forgotPassword/ForgotPassword";
+import ResetPassword from "./pages/auth/resetPassword/ResetPassword";
 import NotFound from "./pages/404/NotFound";
 import AdvancedChat from "./components/app/AdvancedChat";
 
@@ -37,11 +37,11 @@ const App = () => {
             dispatch(setUser({ value: data.user }));
             break;
           default:
-            break;
+            console.warn("Unhandled status:", data.status);
         }
       }
     } catch (err) {
-      localStorage.removeItem("jwt");
+      // localStorage.removeItem("jwt");
       showErrorToast(err as ErrorToastType);
     }
   };
@@ -59,7 +59,7 @@ const App = () => {
           <Route element={<AuthLayout />}>
             <Route path="/signup" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/verify" element={<EmailVerify />} />
+            <Route path="/verify/:token" element={<EmailVerify />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
           </Route>

@@ -8,13 +8,13 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Provider store={store}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </Provider>
-    </ThemeProvider>
-  </StrictMode>
+  // <StrictMode>
+  <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Provider>
+  </ThemeProvider>
+  // </StrictMode>
 );

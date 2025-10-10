@@ -1,13 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { validateForm } from "@/lib/helperFunctions";
 import axiosInstance from "@/lib/axios/axios";
+import { showErrorToast } from "@/lib/utils";
+import type { ErrorToastType } from "@/types/types";
+import { useState } from "react";
 
-const ForgotPassword = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
+  const { token } = useParams();
+  const [btnLoading, setBtnLoading] = useState(false);
+
   const logInBtnHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -18,24 +24,25 @@ const ForgotPassword = () => {
         return toast.error("Invalid inputs");
       }
 
-      formJson.software = "EMart";
+      setBtnLoading(true);
 
-      const { data } = await axiosInstance.post(
-        "/auth/forgot-password",
+      const { data } = await axiosInstance.put(
+        `/auth/reset-password/${token}`,
         formJson
       );
 
       toast.success(data.message);
-
       switch (data.status) {
-        case "FORGOT_PASSWORD_REQUEST":
-          // navigate("/login");
+        case "PASSWORD_RESET_DONE":
+          navigate("/login");
           break;
         default:
-          null;
+          console.warn("Unhandled status:", data.status);
       }
     } catch (err) {
-      console.error(err);
+      showErrorToast(err as ErrorToastType);
+    } finally {
+      setBtnLoading(false);
     }
   };
   return (
@@ -47,39 +54,30 @@ const ForgotPassword = () => {
           noValidate
         >
           <div className="flex flex-col items-center gap-2 text-center">
-            <h1 className="text-2xl font-bold">Forgot Password</h1>
-            <p className="text-muted-foreground text-sm text-balance">
-              Enter your email below to reset password
-            </p>
+            <h1 className="text-2xl font-bold">Reset Password</h1>
           </div>
           <div className="grid gap-6">
             <div className="grid gap-3">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="email"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="password"
                 required
               />
             </div>
-
-            <Button type="submit" className="w-full hover:cursor-pointer">
-              Send
-            </Button>
-          </div>
-          <div className="text-center text-sm">
-            Already you have an account?{" "}
-            <span
-              className="underline underline-offset-4 hover:cursor-pointer"
-              onClick={() => navigate("/login")}
+            <Button
+              type="submit"
+              className="w-full hover:cursor-pointer"
+              disabled={btnLoading}
             >
-              Login
-            </span>
+              {btnLoading ? "Submiting..." : "Submit"}
+            </Button>
           </div>
         </form>
       </div>
     </div>
   );
 };
-export default ForgotPassword;
+export default ResetPassword;

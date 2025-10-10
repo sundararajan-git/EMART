@@ -9,7 +9,7 @@ const AuthGuard = () => {
   const publicRoutes = [
     "/signup",
     "/login",
-    "/verify",
+    "/verify/:token",
     "/forgot-password",
     "/reset-password/:token",
   ];
@@ -18,11 +18,11 @@ const AuthGuard = () => {
     matchPath({ path: route, end: true }, location.pathname)
   );
 
-  // if (!isPublic && !isVerified) {
-  //   return <Navigate to="/login" replace />;
-  // } else if (isPublic && isVerified) {
-  //   return <Navigate to="/" replace />;
-  // }
+  if (!isPublic && !isVerified) {
+    return <Navigate to="/login" replace />;
+  } else if (isPublic && isVerified) {
+    return <Navigate to="/" replace />;
+  }
 
   return <Outlet />;
 };
